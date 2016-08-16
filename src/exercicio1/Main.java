@@ -9,7 +9,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		double[][] matrizSetosa = getFile("./databases/iris.txt", "Iris-setosa");
+	double[][] matrizSetosa = getFile("./databases/iris.txt", "Iris-setosa");
 		double[][] matrizVersicolor = getFile("./databases/iris.txt", "Iris-versicolor");
 		double[][] matrizVirginica = getFile("./databases/iris.txt", "Iris-virginica");
 		
@@ -20,12 +20,16 @@ public class Main {
 		pSetosa.treinar();
 		pVersicolor.treinar();
 		pVirginica.treinar();
-		
-		double[] e = {5.6,2.5,3.9,1.1};
-		
-		
-		
-		System.out.println(pSetosa.run(e));
+//		
+//		double[] e = {5.6,2.5,3.9,1.1};
+//		
+//		
+//		
+//		System.out.println(pSetosa.run(e));
+
+		System.out.println("epocas = "+ pSetosa.getNumEpocas());
+		System.out.println("error = " + pSetosa.calcularError());
+		pSetosa.printW();
 		
 	}
 	
