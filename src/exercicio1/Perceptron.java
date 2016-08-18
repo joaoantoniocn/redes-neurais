@@ -22,7 +22,7 @@ public class Perceptron {
 	
 	public int run(double[] e){
 		int saida = 0;
-		double soma = w[0];
+		double soma = 0;
 		
 		for(int i=0; i < w.length; i++){
 			
@@ -180,6 +180,4 @@ public class Perceptron {
 		this.numEpocas = numEpocas;
 	}
 
-	
-	
 }
