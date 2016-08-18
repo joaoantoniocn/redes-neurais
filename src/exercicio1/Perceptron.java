@@ -6,7 +6,7 @@ public class Perceptron {
 	
 	private double[] w;
 	private double[][] matriz; // ultima posicao guarda o valor esperado
-	private double limear;
+	private double taxaAprendizagem;
 	
 	private int numEpocas;
 	private int maxEpocas;
@@ -15,7 +15,7 @@ public class Perceptron {
 	public Perceptron(int numDimensions, double[][] matriz){
 		this.w  = new double[numDimensions+1];
 		this.matriz = matriz;
-		limear = 1;
+		taxaAprendizagem = 1;
 		numEpocas = 0;
 		maxEpocas = 100;
 	}
@@ -122,9 +122,9 @@ public class Perceptron {
 		for(int i=0; i < w.length; i++){
 			
 			if(i==0){
-				w[i] += (esperado - saida) * 1;
+				w[i] += taxaAprendizagem * (esperado - saida) * 1;
 			}else{
-				w[i] += (esperado - saida) * e[i-1];
+				w[i] += taxaAprendizagem * (esperado - saida) * e[i-1];
 			}
 			
 		}
@@ -156,12 +156,12 @@ public class Perceptron {
 		this.matriz = matriz;
 	}
 
-	public double getLimear() {
-		return limear;
+	public double getTaxaAprendizagem() {
+		return taxaAprendizagem;
 	}
 
-	public void setLimear(double limear) {
-		this.limear = limear;
+	public void setTaxaAprendizagem(double taxaAprendizagem) {
+		this.taxaAprendizagem = taxaAprendizagem;
 	}
 
 	public int getError() {
@@ -180,4 +180,6 @@ public class Perceptron {
 		this.numEpocas = numEpocas;
 	}
 
+	
+	
 }
