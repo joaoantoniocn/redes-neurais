@@ -19,7 +19,7 @@ public class Main {
 		
 		pSetosa.treinar();
 		pVersicolor.treinar();
-		pVirginica.treinar();
+		pVirginica.treinarAleatorio();
 //		
 //		double[] e = {5.6,2.5,3.9,1.1};
 //		
@@ -27,9 +27,9 @@ public class Main {
 //		
 //		System.out.println(pSetosa.run(e));
 
-		System.out.println("epocas = "+ pSetosa.getNumEpocas());
-		System.out.println("error = " + pSetosa.calcularError());
-		pSetosa.printW();
+		//System.out.println("epocas = "+ pVirginica.getNumEpocas());
+		//System.out.println("error = " + pVirginica.calcularError());
+		pVirginica.printBase();
 		
 	}
 	
