@@ -70,31 +70,20 @@ public class Perceptron {
 	}
 	
 	public void treinarAleatorio(){
+		double[] temp;
 		
-		boolean treinado = true;
-		error = 0;
-		//System.out.println("----------------------- epoca "+ numEpocas);
-		
-		// percorre todos os exemplos
 		for(int i=0; i< matriz.length; i++){
-			Random r = new Random();
-			int indice = r.nextInt(matriz.length);
-			int saida = run(matriz[indice]);
 			
-			// checa a saida como valor esperado
-			if(saida != matriz[indice][matriz[1].length-1]){
-				updateW(matriz[indice], saida, (int) matriz[indice][matriz[1].length-1]);
-				treinado = false;
+			if((i%3) == 0){
+				temp = matriz[i];
+				
+				matriz[i] = matriz[matriz.length-i-1];
+				matriz[matriz.length-1-i] = temp;
 			}
 			
 		}
 		
-		numEpocas++;
-		
-		if((!treinado) && (numEpocas<maxEpocas)){
-			treinar();
-		}
-		
+		treinar();
 	}
 	
 	public int calcularError(){
@@ -131,6 +120,26 @@ public class Perceptron {
 		error++;
 		//System.out.println("w0 = "+w[0]+" | w1 = "+w[1]+" | w2 = "+w[2]+" | w3 = "+w[3]);
 		
+	}
+	
+	public void printBase(){
+		for (int i = 0; i < matriz.length; i++) {
+			System.out.println();
+			for (int j = 0; j < w.length; j++) {
+				//System.out.print(w.length);
+				
+				if(j==0){
+					System.out.print(i + ": ");
+				}
+				System.out.print(matriz[i][j]);
+				if(j<(w.length-2)){
+					System.out.print(",");
+				}else if(j == (w.length-2)){
+					System.out.print(" - ");
+				} 
+			}
+
+		}
 	}
 	
 	public void printW(){
