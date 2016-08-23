@@ -12,8 +12,9 @@ public class Perceptron {
 	private int maxEpocas;
 	private int error;
 	
-	public Perceptron(int numDimensions, double[][] matriz){
-		this.w  = new double[numDimensions+1];
+	public Perceptron(double[][] matriz){
+		
+		this.w  = new double[matriz[1].length];
 		this.matriz = matriz;
 		taxaAprendizagem = 1;
 		numEpocas = 0;
