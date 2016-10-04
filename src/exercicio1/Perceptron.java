@@ -12,6 +12,10 @@ public class Perceptron {
 	private int maxEpocas;
 	private int error;
 	
+	// --- MLP ---
+	private double lambda;
+	private double errorMLP; // erro usado para atualizar os pesos da MLP
+	
 	public Perceptron(double[][] matriz){
 		
 		this.w  = new double[matriz[1].length];
@@ -19,6 +23,37 @@ public class Perceptron {
 		taxaAprendizagem = 1;
 		numEpocas = 0;
 		maxEpocas = 100;
+	}
+	
+	// MLP
+	public Perceptron(){
+		lambda = 0;
+	}
+	
+	public double runMLP(double[] e){
+		double saida = 0;
+		double soma = 0;
+		
+		for(int i=0; i < w.length; i++){
+			
+			if(i==0){
+				soma += 1 * w[i];
+			}else{
+				soma += e[i-1] * w[i];
+			}
+			
+			
+		}
+		
+		saida = sigmoide(soma);
+		
+		return saida;
+	}
+	
+	private double sigmoide(double output){
+		double result = 1/(1 + Math.pow(Math.E, lambda*output*-1));
+		
+		return result;
 	}
 	
 	public int run(double[] e){
@@ -150,6 +185,11 @@ public class Perceptron {
 		}
 	}
 	
+	// seta o numero de pesos
+	public void setWMLP(int tamanho){
+		this.w = new double[tamanho];
+	}
+	
 	public double[] getW() {
 		return w;
 	}
@@ -190,6 +230,23 @@ public class Perceptron {
 		this.numEpocas = numEpocas;
 	}
 
+	public double getLambda() {
+		return lambda;
+	}
+
+	public void setLambda(double lambda) {
+		this.lambda = lambda;
+	}
+
+	public double getErrorMLP() {
+		return errorMLP;
+	}
+
+	public void setErrorMLP(double errorMLP) {
+		this.errorMLP = errorMLP;
+	}
+
+	
 	
 	
 }
