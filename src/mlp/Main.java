@@ -16,8 +16,16 @@ public class Main {
 		
 		MLP mlp = new MLP(base, label, 3, 3);
 
-		
+		//mlp.treinar();
 
+		double[] e = new double[4];
+		e[0] = 5.1;
+		e[1] = 3.5;
+		e[2] = 1.4;
+		e[3] = 0.2;
+		
+		mlp.run(e);
+		
 	}
 
 	public static double[][] getFile(String path) {

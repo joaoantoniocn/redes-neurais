@@ -13,8 +13,9 @@ public class Perceptron {
 	private int error;
 	
 	// --- MLP ---
-	private double lambda;
-	private double errorMLP; // erro usado para atualizar os pesos da MLP
+	private double lambda; // 
+	private double delta; // erro usado para atualizar os pesos da MLP
+	private double[] ultimaEntrada; // guarda o valor da ultima entrada para ser usado na atualização dos pesos
 	
 	public Perceptron(double[][] matriz){
 		
@@ -27,12 +28,13 @@ public class Perceptron {
 	
 	// MLP
 	public Perceptron(){
-		lambda = 0;
+		taxaAprendizagem = 1;
 	}
 	
 	public double runMLP(double[] e){
 		double saida = 0;
 		double soma = 0;
+		this.ultimaEntrada = e;
 		
 		for(int i=0; i < w.length; i++){
 			
@@ -50,8 +52,14 @@ public class Perceptron {
 		return saida;
 	}
 	
-	private double sigmoide(double output){
-		double result = 1/(1 + Math.pow(Math.E, lambda*output*-1));
+	private double sigmoide(double x){
+		double result = 1/(1 + Math.pow(Math.E, lambda*x*-1));
+		
+		return result;
+	}
+	
+	private double sigmoideDerivada(double x){
+		double result = (1-sigmoide(x)) * sigmoide(x);
 		
 		return result;
 	}
@@ -82,7 +90,6 @@ public class Perceptron {
 		
 		boolean treinado = true;
 		error = 0;
-		//System.out.println("----------------------- epoca "+ numEpocas);
 		
 		// percorre todos os exemplos
 		for(int i=0; i< matriz.length; i++){
@@ -125,8 +132,7 @@ public class Perceptron {
 	public int calcularError(){
 		
 		error = 0;
-		//System.out.println("----------------------- epoca "+ numEpocas);
-		
+
 		// percorre todos os exemplos
 		for(int i=0; i< matriz.length; i++){
 			
@@ -158,6 +164,20 @@ public class Perceptron {
 		
 	}
 	
+	public void updateWMLP(){
+		
+		for(int i=0; i < w.length; i++){
+			
+			if(i==0){
+				w[i] += taxaAprendizagem * 1 * delta;
+			}else{
+				w[i] += taxaAprendizagem * ultimaEntrada[i-1] * delta;
+			}
+			
+		}
+		
+	} // updateWMLP()
+	
 	public void printBase(){
 		for (int i = 0; i < matriz.length; i++) {
 			System.out.println();
@@ -176,6 +196,24 @@ public class Perceptron {
 			}
 
 		}
+	}
+	
+	public void printEntrada(){
+		print(ultimaEntrada);
+	}
+	
+	private void print(double[] e){
+		for(int i=0; i < e.length; i++){
+			System.out.print(e[i] + " - ");
+		}
+		System.out.println();
+	}
+	
+	private void print(int[] e){
+		for(int i=0; i < e.length; i++){
+			System.out.print(e[i] + " - ");
+		}
+		System.out.println();
 	}
 	
 	public void printW(){
@@ -238,15 +276,13 @@ public class Perceptron {
 		this.lambda = lambda;
 	}
 
-	public double getErrorMLP() {
-		return errorMLP;
+	public double getDelta() {
+		return delta;
 	}
 
-	public void setErrorMLP(double errorMLP) {
-		this.errorMLP = errorMLP;
+	public void setDelta(double delta) {
+		this.delta = delta;
 	}
 
-	
-	
 	
 }

@@ -9,6 +9,9 @@ public class MLP {
 	private int[][] label;
 	private int neuronios;
 	private int camadas;
+	private double lambda;
+	private int erros; // numero de erros no ciclo
+	private int ciclos;
 
 	public MLP(double[][] base, int[][] label, int neuronios, int camadas) {
 		perceptrons = new Perceptron[camadas][neuronios];
@@ -16,7 +19,11 @@ public class MLP {
 		this.label = label;
 		this.neuronios = neuronios;
 		this.camadas = camadas;
+		this.lambda = 1;
+		this.ciclos = 0;
 		iniciarPerceptrons(base[1].length);
+		
+		
 	}
 
 	private void iniciarPerceptrons(int tamanho) {
@@ -26,14 +33,15 @@ public class MLP {
 
 				perceptrons[i][j] = new Perceptron();
 				perceptrons[i][j].setWMLP(tamanho);
+				perceptrons[i][j].setLambda(lambda);
 			}
 		}
 
 	}
 
 	public double[] run(double[] e) {
-		double[] result = new double[base.length];
-		double[][] resultLayer = new double[base[1].length][base.length]; // [camada][neuronio]
+		double[] result = new double[neuronios];
+		double[][] resultLayer = new double[camadas][neuronios]; // [camada][neuronio]
 
 		// camadas
 		for (int i = 0; i < this.camadas; i++) {
@@ -42,10 +50,12 @@ public class MLP {
 
 				if (i == 0) {
 					resultLayer[i][j] = perceptrons[i][j].runMLP(e);
+					
 				} else {
 					resultLayer[i][j] = perceptrons[i][j].runMLP(resultLayer[i - 1]);
 				}
 			}
+			
 		}
 		
 		
@@ -56,37 +66,107 @@ public class MLP {
 	
 	public void treinar(){
 		
+		erros = 0;
+		
 		// resultado da ultima camada para um exemplo de input k
-		double[] resultLayer = new double[neuronios]; // [camada][neuronio]
+		double[] resultLastLayer = new double[neuronios]; // [camada][neuronio]
 		
 		// base
 		for(int k=0; k< base.length; k++){
-			resultLayer = run(base[k]);
+			resultLastLayer = run(base[k]);
+		
+			if(checkErro(resultLastLayer, k)){
+				// --- calculando o Delta (erro) de cada perceptron em back propagation
+				calcularDelta(resultLastLayer);
+				
+				// --- atualizando os pesos
+				atualizarPesos();
+				
+				erros +=1;
+			}
+		
 			
-			for(int i = (camadas-1); i >= 0; i--){
-				for(int j = (neuronios-1); j >= 0; j--){
-					
-					// camada de saida
-					// o erro na camada de saida é o valor esperado - o valor obtido
-					if (i == (camadas-1)){
-						perceptrons[i][j].setErrorMLP(label[i][j] - resultLayer[j]);
-					}else{
-						double error = 0;
-						
-						// calculando o erro do perceptron (camadas intermediarias)
-						// o erro nessa camada é dado por o somatório de (erro do perceptron da próxima camada (camada da frente)* peso que liga o perceptron atual com o perceptron da próxima camada)
-						for(int m=0; m < neuronios; m++){
-							// m+1 é usado no getW() pq o peso de indice 0 é o peso do BIOS( entrada = 1)
-							error += perceptrons[i+1][m].getW()[m+1] * perceptrons[i+1][m].getErrorMLP();
-						}
-						
-						perceptrons[i][j].setErrorMLP(error);
-					}
-					
-				}
+		} // base
+		
+	}
+	
+	private void print(double[] e){
+		System.out.println();
+		for(int i=0; i<e.length; i++){
+			System.out.print(e[i] + " - ");
+		}
+		System.out.println();
+	}
+	
+	private void print(int[] e){
+		System.out.println();
+		for(int i=0; i<e.length; i++){
+			System.out.print(e[i] + " - ");
+		}
+		System.out.println();
+	}
+	
+	// exemplo é o indice do exemplo que passou pela rede e gerou esses resultados
+	private boolean checkErro(double[] saida, int exemplo){
+		boolean result = false;
+		
+		for(int i=0; i<saida.length; i++){
+			if(saida[i] != label[exemplo][i]){
+				result = true;
+			}
+		}
+		
+		return result;
+	}
+	
+	private void atualizarPesos(){
+		
+		for(int i=0; i<camadas; i++){
+			for(int j=0; j<neuronios; j++){
+				perceptrons[i][j].updateWMLP();
 			}
 		}
 		
 		
+	}
+	
+	private void calcularDelta(double[] resultLastLayer){
+		
+		for(int i = (camadas-1); i >= 0; i--){
+			for(int j = 0; j < neuronios; j++){
+				
+				// camada de saida
+				// o erro na camada de saida é o valor esperado - o valor obtido
+				if (i == (camadas-1)){
+					
+					double delta = sigmoideDerivada(resultLastLayer[j]) * (label[i][j] - resultLastLayer[j]);
+					perceptrons[i][j].setDelta(delta);
+				}else{
+					double error = 0;
+					
+					// calculando o erro do perceptron (camadas intermediarias)
+					// o erro nessa camada é dado por o somatório de (erro do perceptron da próxima camada (camada da frente)* peso que liga o perceptron atual com o perceptron da próxima camada)
+					for(int m=0; m < neuronios; m++){
+						// m+1 é usado no getW() pq o peso de indice 0 é o peso do BIOS( entrada = 1)
+						error += perceptrons[i+1][m].getW()[m+1] * perceptrons[i+1][m].getDelta();
+					}
+					
+					perceptrons[i][j].setDelta( sigmoideDerivada(resultLastLayer[j])*error);
+				}
+				
+			} // for neuronios
+		} // for camadas
+	} // calcularDelta()
+	
+	private double sigmoide(double x){
+		double result = 1/(1 + Math.pow(Math.E, lambda*x*-1));
+		
+		return result;
+	}
+	
+	private double sigmoideDerivada(double x){
+		double result = (1-sigmoide(x)) * sigmoide(x);
+		
+		return result;
 	}
 }
