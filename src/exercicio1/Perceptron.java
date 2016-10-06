@@ -28,7 +28,6 @@ public class Perceptron {
 	
 	// MLP
 	public Perceptron(){
-		taxaAprendizagem = 1;
 	}
 	
 	public double runMLP(double[] e){

@@ -2,6 +2,7 @@ package mlp;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -9,14 +10,29 @@ import exercicio1.Perceptron;
 
 public class Main {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
 		double[][] base = getFile("./databases/iris.txt");
 		int[][] label = getLabel("./databases/iris.txt");
 		
 		MLP mlp = new MLP(base, label, 3, 3);
-
-		//mlp.treinar();
+		
+		
+		StringBuffer sb = new StringBuffer();
+		for(int i=0; i< 1000; i++){
+			mlp.treinar();
+			
+			if(i%10 == 0){
+				sb.append('\n');
+				sb.append(mlp.testarErro());
+			}
+		}
+		
+		new FileOutputStream("temp.txt").write(sb.toString().getBytes());
+		
+		
+		
+		
 
 		double[] e = new double[4];
 		e[0] = 5.1;
