@@ -12,10 +12,12 @@ public class Main {
 
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
-		double[][] base = getFile("./databases/iris.txt");
-		int[][] label = getLabel("./databases/iris.txt");
+		//double[][] base = getFile("./databases/iris.txt");
+		//int[][] label = getLabel("./databases/iris.txt");
+		double[][] base = {{0, 0}, {0, 1}, {1, 0}, {1, 1}};
+		int[][] label = {{0}, {1}, {1}, {0}};
 		
-		MLP mlp = new MLP(base, label, 3, 3);
+		MLP mlp = new MLP(base, label, 2, 1);
 		
 		
 		StringBuffer sb = new StringBuffer();
@@ -34,13 +36,12 @@ public class Main {
 		
 		
 
-		double[] e = new double[4];
-		e[0] = 5.1;
-		e[1] = 3.5;
-		e[2] = 1.4;
-		e[3] = 0.2;
+		double[] e = new double[2];
+		e[0] = 1;
+		e[1] = 1;
 		
-		mlp.run(e);
+		
+		System.out.println(mlp.run(e)[0]);
 		
 	}
 

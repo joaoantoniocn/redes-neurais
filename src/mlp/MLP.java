@@ -14,15 +14,15 @@ public class MLP {
 	private int ciclos;
 	private double taxaAprendizagem;
 
-	public MLP(double[][] base, int[][] label, int neuronios, int camadas) {
+	public MLP(double[][] base, int[][] label, int camadas, int neuronios) {
 		perceptrons = new Perceptron[camadas][neuronios];
 		this.base = base;
 		this.label = label;
 		this.neuronios = neuronios;
 		this.camadas = camadas;
-		this.lambda = 1;
+		this.lambda = 7;
 		this.ciclos = 0;
-		this.taxaAprendizagem = 0.1;
+		this.taxaAprendizagem = 1;
 		iniciarPerceptrons(base[1].length);
 
 	}
@@ -51,11 +51,11 @@ public class MLP {
 			for (int j = 0; j < this.neuronios; j++) {
 
 				if (i == 0) {
-					resultLayer[i][j] = perceptrons[i][j].runMLP(e);
+					resultLayer[i][j] = sigmoide(perceptrons[i][j].runMLP(e));
 
 				} else {
-					resultLayer[i][j] = perceptrons[i][j]
-							.runMLP(resultLayer[i - 1]);
+					resultLayer[i][j] = sigmoide(perceptrons[i][j]
+							.runMLP(resultLayer[i - 1]));
 				}
 			}
 
@@ -77,7 +77,7 @@ public class MLP {
 		for (int k = 0; k < base.length; k++) {
 			resultLastLayer = run(base[k]);
 
-			if (checkErro(resultLastLayer, k)) {
+			//if (checkErro(resultLastLayer, k)) {
 				// --- calculando o Delta (erro) de cada perceptron em back
 				// propagation
 				calcularDelta(resultLastLayer);
@@ -86,7 +86,7 @@ public class MLP {
 				atualizarPesos();
 
 				erros += 1;
-			}
+			//}
 
 		} // base
 
@@ -140,7 +140,7 @@ public class MLP {
 		boolean result = false;
 
 		for (int i = 0; i < saida.length; i++) {
-			if (saida[i] != label[exemplo][i]) {
+			if (sigmoide(saida[i]) != label[exemplo][i]) {
 				result = true;
 			}
 		}
@@ -169,6 +169,7 @@ public class MLP {
 
 					double delta = sigmoideDerivada(resultLastLayer[j])
 							* (label[i][j] - resultLastLayer[j]);
+					
 					perceptrons[i][j].setDelta(delta);
 				} else {
 					double error = 0;
@@ -181,7 +182,7 @@ public class MLP {
 					for (int m = 0; m < neuronios; m++) {
 						// m+1 é usado no getW() pq o peso de indice 0 é o peso
 						// do BIOS( entrada = 1)
-						error += perceptrons[i + 1][m].getW()[m + 1]
+						error += perceptrons[i + 1][m].getW()[j + 1]
 								* perceptrons[i + 1][m].getDelta();
 					}
 
@@ -199,9 +200,11 @@ public class MLP {
 
 		return result;
 	}
-
+	
+	// x já é o valor passado pela sigmoide
 	private double sigmoideDerivada(double x) {
-		double result = (1 - sigmoide(x)) * sigmoide(x);
+		//double result = (1-sigmoide(x)) * sigmoide(x);
+		double result = (1-x) * x;
 
 		return result;
 	}

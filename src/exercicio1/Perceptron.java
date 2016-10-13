@@ -46,7 +46,8 @@ public class Perceptron {
 			
 		}
 		
-		saida = sigmoide(soma);
+		//saida = sigmoide(soma);
+		saida = soma;
 		
 		return saida;
 	}
@@ -57,11 +58,13 @@ public class Perceptron {
 		return result;
 	}
 	
-	private double sigmoideDerivada(double x){
-		double result = (1-sigmoide(x)) * sigmoide(x);
-		
-		return result;
-	}
+//	// x já é o valor passado pela sigmoide
+//	private double sigmoideDerivada(double x){
+//		double result = (1-sigmoide(x)) * sigmoide(x);
+//		//double result = (1-x) * x;
+//		
+//		return result;
+//	}
 	
 	public int run(double[] e){
 		int saida = 0;
@@ -225,6 +228,10 @@ public class Perceptron {
 	// seta o numero de pesos
 	public void setWMLP(int tamanho){
 		this.w = new double[tamanho];
+		
+		for(int i=0; i < this.w.length; i++){
+			this.w[i] = Math.random();
+		}
 	}
 	
 	public double[] getW() {
