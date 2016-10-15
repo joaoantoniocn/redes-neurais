@@ -163,5 +163,40 @@ public class MLP {
 		return x * (1 - x);
 	}
 	
+	public double calcularTaxaAcerto(){
+		double taxaAcerto = 0;
+		
+		double[] temp;
+		boolean acertou = true;
+		
+		for(int i=0; i < base.length; i++){
+			
+			temp = run(base[i]);
+			acertou = true;
+			
+			for(int j=0; j < label[i].length; j++){
+				
+				if(temp[j] >= 0.5){
+					if(!(label[i][j] == 1)){
+						acertou = false;
+					}
+				}else{
+					if(!(label[i][j] == 0)){
+						acertou = false;
+					}
+				}
+				
+			}
+			
+			if(acertou){
+				taxaAcerto += 1;
+			}
+			
+		}
+		
+		taxaAcerto = taxaAcerto / base.length;
+		
+		return taxaAcerto;
+	}
 	
 }

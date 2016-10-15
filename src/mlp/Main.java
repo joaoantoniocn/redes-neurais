@@ -21,17 +21,17 @@ public class Main {
 		
 		MLP mlp = new MLP(base, label, neuroniosPorCamada);
 		
-		mlp.treinar(1000);
-		
-		double[] e = {5.5,2.5,4.0,1.3};
-		
-		double[] result = mlp.run(e);
-		
-		System.out.print("<");
-		for(int i=0; i<result.length-1; i++){
-			System.out.print(result[i] + ", ");
-		}
-		System.out.println(">");
+		mlp.treinar(10000);
+		System.out.println(mlp.calcularTaxaAcerto());
+//		double[] e = {5.5,2.5,4.0,1.3};
+//		
+//		double[] result = mlp.run(e);
+//		
+//		System.out.print("<");
+//		for(int i=0; i<result.length-1; i++){
+//			System.out.print(result[i] + ", ");
+//		}
+//		System.out.println(">");
 		
 //		StringBuffer sb = new StringBuffer();
 //		for(int i=0; i< 1000; i++){
