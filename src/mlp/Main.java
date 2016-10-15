@@ -12,36 +12,47 @@ public class Main {
 
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
-		//double[][] base = getFile("./databases/iris.txt");
-		//int[][] label = getLabel("./databases/iris.txt");
-		double[][] base = {{0, 0}, {0, 1}, {1, 0}, {1, 1}};
-		int[][] label = {{0}, {1}, {1}, {0}};
+		double[][] base = getFile("./databases/iris.txt");
+		int[][] label = getLabel("./databases/iris.txt");
+		//double[][] base = {{0, 0}, {0, 1}, {1, 0}, {1, 1}};
+		//int[][] label = {{0}, {1}, {1}, {0}};
+		int[] neuroniosPorCamada = {3, 10, 3};
 		
-		MLP mlp = new MLP(base, label, 2, 1);
 		
+		MLP mlp = new MLP(base, label, neuroniosPorCamada);
 		
-		StringBuffer sb = new StringBuffer();
-		for(int i=0; i< 1000; i++){
-			mlp.treinar();
-			
-			if(i%10 == 0){
-				sb.append('\n');
-				sb.append(mlp.testarErro());
-			}
+		mlp.treinar(1000);
+		
+		double[] e = {5.5,2.5,4.0,1.3};
+		
+		double[] result = mlp.run(e);
+		
+		System.out.print("<");
+		for(int i=0; i<result.length-1; i++){
+			System.out.print(result[i] + ", ");
 		}
+		System.out.println(">");
 		
-		new FileOutputStream("temp.txt").write(sb.toString().getBytes());
-		
-		
-		
-		
+//		StringBuffer sb = new StringBuffer();
+//		for(int i=0; i< 1000; i++){
+//			mlp.treinar();
+//			
+//			if(i%10 == 0){
+//				sb.append('\n');
+//				sb.append(mlp.testarErro());
+//			}
+//		}
+//		
+//		new FileOutputStream("temp.txt").write(sb.toString().getBytes());
+//		
+//		
+//		
+//		
+//
 
-		double[] e = new double[2];
-		e[0] = 1;
-		e[1] = 1;
-		
-		
-		System.out.println(mlp.run(e)[0]);
+//		
+//		
+//		System.out.println(mlp.run(e)[0]);
 		
 	}
 

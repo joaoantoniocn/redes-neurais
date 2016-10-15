@@ -4,173 +4,127 @@ import exercicio1.Perceptron;
 
 public class MLP {
 
-	private Perceptron[][] perceptrons; // linha, coluna
-	private double[][] base; // base
-	private int[][] label;
-	private int neuronios;
-	private int camadas;
-	private double lambda;
-	private int erros; // numero de erros no ciclo
-	private int ciclos;
+	private PerceptronMLP[][] perceptrons; // camada, neuronio
+	private double[][] base; // exemplo, atributos
+	private int[][] label; // exemplo, label
+	private int[] neuroniosPorCamada;
+	private double[][] entrada; // camada, atributo
+
 	private double taxaAprendizagem;
 
-	public MLP(double[][] base, int[][] label, int camadas, int neuronios) {
-		perceptrons = new Perceptron[camadas][neuronios];
+	public MLP(double[][] base, int[][] label, int[] neuroniosPorCamada) {
+
 		this.base = base;
 		this.label = label;
-		this.neuronios = neuronios;
-		this.camadas = camadas;
-		this.lambda = 7;
-		this.ciclos = 0;
-		this.taxaAprendizagem = 1;
-		iniciarPerceptrons(base[1].length);
+		this.neuroniosPorCamada = neuroniosPorCamada;
+
+		this.taxaAprendizagem = 0.1;
+		iniciarPerceptrons();
+		inciarEntrada();
 
 	}
 
-	private void iniciarPerceptrons(int tamanho) {
+	private void iniciarPerceptrons() {
 
-		for (int i = 0; i < this.camadas; i++) {
-			for (int j = 0; j < neuronios; j++) {
+		// criando as camadas
+		perceptrons = new PerceptronMLP[neuroniosPorCamada.length][];
 
-				perceptrons[i][j] = new Perceptron();
-				perceptrons[i][j].setWMLP(tamanho);
-				perceptrons[i][j].setLambda(lambda);
-				perceptrons[i][j].setTaxaAprendizagem(taxaAprendizagem);
+		// rodando todas as camadas
+		for (int camada = 0; camada < neuroniosPorCamada.length; camada++) {
+
+			// criando os neuronios de cada camada
+			perceptrons[camada] = new PerceptronMLP[neuroniosPorCamada[camada]];
+
+			// rodando os todos os neuronios de cada camada
+			for (int neuronio = 0; neuronio < neuroniosPorCamada[camada]; neuronio++) {
+
+				// iniciando neuronios
+				if (camada == 0) {
+					// System.out.println("iniciado <" + camada + "," + neuronio
+					// + ">");
+					perceptrons[camada][neuronio] = new PerceptronMLP(
+							base[0].length, taxaAprendizagem);
+				} else {
+					// System.out.println("iniciado <" + camada + "," + neuronio
+					// + ">");
+					perceptrons[camada][neuronio] = new PerceptronMLP(
+							neuroniosPorCamada[camada - 1], taxaAprendizagem);
+				}
+
 			}
+		}
+
+	}
+
+	private void inciarEntrada() {
+
+		// numero de camadas + 1, ultima camada guarda a resposta da MLP
+		entrada = new double[neuroniosPorCamada.length + 1][];
+
+		// numero de atributos + 1, ultimo atributo é a bias
+		entrada[0] = new double[base[0].length + 1];
+
+		// colocando o valor da bias na ultima posicao da camada
+		entrada[0][entrada[0].length - 1] = 1;
+
+		for (int camada = 1; camada < entrada.length; camada++) {
+			// dizendo quantos atributos vai ter em cada camada
+			entrada[camada] = new double[neuroniosPorCamada[camada - 1] + 1];
+
+			// colocando o valor da bias na ultima posicao de cada camada
+			entrada[camada][entrada[camada].length - 1] = 1;
 		}
 
 	}
 
 	public double[] run(double[] e) {
-		double[] result = new double[neuronios];
-		double[][] resultLayer = new double[camadas][neuronios]; // [camada][neuronio]
+
+		for (int i = 0; i < entrada[0].length - 1; i++) {
+			entrada[0][i] = e[i];
+		}
 
 		// camadas
-		for (int i = 0; i < this.camadas; i++) {
-			// perceptrons
-			for (int j = 0; j < this.neuronios; j++) {
-
-				if (i == 0) {
-					resultLayer[i][j] = sigmoide(perceptrons[i][j].runMLP(e));
-
-				} else {
-					resultLayer[i][j] = sigmoide(perceptrons[i][j]
-							.runMLP(resultLayer[i - 1]));
-				}
+		for (int camada = 0; camada < neuroniosPorCamada.length; camada++) {
+			// neuronio
+			// System.out.println("Camada " + camada + " tem " +
+			// this.neuroniosPorCamada[camada] + " neuronios");
+			for (int neuronio = 0; neuronio < this.neuroniosPorCamada[camada]; neuronio++) {
+				// System.out.println("<" + camada + "," + neuronio + ">");
+				entrada[camada + 1][neuronio] = perceptrons[camada][neuronio]
+						.run(entrada[camada]);
 			}
 
 		}
 
-		result = resultLayer[this.camadas - 1];
-
-		return result;
+		return entrada[neuroniosPorCamada.length];
 	}
-
-	public void treinar() {
-
-		erros = 0;
-
-		// resultado da ultima camada para um exemplo de input k
-		double[] resultLastLayer = new double[neuronios]; // [camada][neuronio]
-
-		// base
-		for (int k = 0; k < base.length; k++) {
-			resultLastLayer = run(base[k]);
-
-			//if (checkErro(resultLastLayer, k)) {
-				// --- calculando o Delta (erro) de cada perceptron em back
-				// propagation
-				calcularDelta(resultLastLayer);
-
-				// --- atualizando os pesos
+	
+	public void treinar(int numeroEpocas){
+		
+		for(int i=0; i<numeroEpocas; i++){
+			for(int exemplo=0; exemplo<base.length; exemplo++){
+				run(base[exemplo]);
+				calcularDelta(exemplo);
 				atualizarPesos();
-
-				erros += 1;
-			//}
-
-		} // base
-
-		ciclos += 1;
-
-	}
-
-	private void print(double[] e) {
-		System.out.println();
-		for (int i = 0; i < e.length; i++) {
-			System.out.print(e[i] + " - ");
-		}
-		System.out.println();
-	}
-
-	private void print(int[] e) {
-		System.out.println();
-		for (int i = 0; i < e.length; i++) {
-			System.out.print(e[i] + " - ");
-		}
-		System.out.println();
-	}
-
-	public double testarErro() {
-		double result = 0;
-		double[] saida = new double[neuronios];
-		for (int i = 0; i < base.length; i++) {
-			saida = run(base[i]);
-
-			result += checkDiferenca(saida, i);
-		}
-
-		return result;
-	}
-
-	private double checkDiferenca(double[] saida, int exemplo) {
-		double result = 0;
-
-		for (int i = 0; i < saida.length; i++) {
-			if (saida[i] != label[exemplo][i]) {
-				result += (label[exemplo][i] - saida[i]) * (label[exemplo][i] - saida[i]);
 			}
 		}
-
-		return result;
+		
 	}
 
-	// exemplo é o indice do exemplo que passou pela rede e gerou esses
-	// resultados
-	private boolean checkErro(double[] saida, int exemplo) {
-		boolean result = false;
+	private void calcularDelta(int indiceExemplo) {
 
-		for (int i = 0; i < saida.length; i++) {
-			if (sigmoide(saida[i]) != label[exemplo][i]) {
-				result = true;
-			}
-		}
-
-		return result;
-	}
-
-	private void atualizarPesos() {
-
-		for (int i = 0; i < camadas; i++) {
-			for (int j = 0; j < neuronios; j++) {
-				perceptrons[i][j].updateWMLP();
-			}
-		}
-
-	}
-
-	private void calcularDelta(double[] resultLastLayer) {
-
-		for (int i = (camadas - 1); i >= 0; i--) {
-			for (int j = 0; j < neuronios; j++) {
+		for (int camada = (neuroniosPorCamada.length - 1); camada >= 0; camada--) {
+			for (int neuronio = 0; neuronio < neuroniosPorCamada[camada]; neuronio++) {
 
 				// camada de saida
 				// o erro na camada de saida é o valor esperado - o valor obtido
-				if (i == (camadas - 1)) {
-
-					double delta = sigmoideDerivada(resultLastLayer[j])
-							* (label[i][j] - resultLastLayer[j]);
+				if (camada == (neuroniosPorCamada.length - 1)) {
+					double saida = entrada[entrada.length-1][neuronio];
 					
-					perceptrons[i][j].setDelta(delta);
+					double delta = sigmoideDerivada(saida)
+							* (label[indiceExemplo][neuronio] - saida);
+
+					perceptrons[camada][neuronio].setDelta(delta);
 				} else {
 					double error = 0;
 
@@ -179,33 +133,35 @@ public class MLP {
 					// perceptron da próxima camada (camada da frente)* peso que
 					// liga o perceptron atual com o perceptron da próxima
 					// camada)
-					for (int m = 0; m < neuronios; m++) {
+					for (int neuronioFrente = 0; neuronioFrente < neuroniosPorCamada[camada+1]; neuronioFrente++) {
 						// m+1 é usado no getW() pq o peso de indice 0 é o peso
 						// do BIOS( entrada = 1)
-						error += perceptrons[i + 1][m].getW()[j + 1]
-								* perceptrons[i + 1][m].getDelta();
+						error += perceptrons[camada + 1][neuronioFrente].getW()[neuronio]
+								* perceptrons[camada + 1][neuronioFrente].getDelta();
 					}
 
-					perceptrons[i][j]
-							.setDelta(sigmoideDerivada(resultLastLayer[j])
-									* error);
+					perceptrons[camada][neuronio]
+							.setDelta(sigmoideDerivada(entrada[camada+1][neuronio])* error);
+									
 				}
 
 			} // for neuronios
 		} // for camadas
 	} // calcularDelta()
+	
+	private void atualizarPesos(){
+		
+		for(int camada = 0; camada < neuroniosPorCamada.length; camada++){
+			for(int neuronio = 0; neuronio < neuroniosPorCamada[camada]; neuronio++){
+				perceptrons[camada][neuronio].atualizarPesos(entrada[camada]);
+			}
+		}
+		
+	} // atualizarPesos
 
-	private double sigmoide(double x) {
-		double result = 1 / (1 + Math.pow(Math.E, lambda * x * -1));
-
-		return result;
+	private double sigmoideDerivada(double x){
+		return x * (1 - x);
 	}
 	
-	// x já é o valor passado pela sigmoide
-	private double sigmoideDerivada(double x) {
-		//double result = (1-sigmoide(x)) * sigmoide(x);
-		double result = (1-x) * x;
-
-		return result;
-	}
+	
 }
