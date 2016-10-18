@@ -18,7 +18,7 @@ public class MLP {
 		this.label = label;
 		this.neuroniosPorCamada = neuroniosPorCamada;
 
-		this.taxaAprendizagem = 0.1;
+		this.taxaAprendizagem = 1;
 		iniciarPerceptrons();
 		inciarEntrada();
 
@@ -195,6 +195,42 @@ public class MLP {
 		}
 		
 		taxaAcerto = taxaAcerto / base.length;
+		
+		return taxaAcerto;
+	}
+	
+	public double calcularTaxaAcerto(double[][] baseTeste, int[][] labelTeste){
+		double taxaAcerto = 0;
+		
+		double[] temp;
+		boolean acertou = true;
+		
+		for(int i=0; i < baseTeste.length; i++){
+			
+			temp = run(baseTeste[i]);
+			acertou = true;
+			
+			for(int j=0; j < labelTeste[i].length; j++){
+				
+				if(temp[j] >= 0.5){
+					if(!(labelTeste[i][j] == 1)){
+						acertou = false;
+					}
+				}else{
+					if(!(labelTeste[i][j] == 0)){
+						acertou = false;
+					}
+				}
+				
+			}
+			
+			if(acertou){
+				taxaAcerto += 1;
+			}
+			
+		}
+		
+		taxaAcerto = taxaAcerto / baseTeste.length;
 		
 		return taxaAcerto;
 	}
