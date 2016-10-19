@@ -28,7 +28,7 @@ public class Main {
 
 		// printBase(baseTeste);
 
-		int[] neuroniosPorCamada = {  3, 3 };
+		int[] neuroniosPorCamada = {  18, 10, 3 };
 
 		MLP mlp = new MLP(baseTreino, labelTreino, neuroniosPorCamada);
 

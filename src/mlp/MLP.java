@@ -18,7 +18,7 @@ public class MLP {
 		this.label = label;
 		this.neuroniosPorCamada = neuroniosPorCamada;
 
-		this.taxaAprendizagem = 1;
+		this.taxaAprendizagem = 0.001;
 		iniciarPerceptrons();
 		inciarEntrada();
 
@@ -223,6 +223,7 @@ public class MLP {
 				}
 				
 			}
+			//System.out.println("exemplo: " + i + " <"+temp[0]+", "+temp[1]+", "+temp[2]+">");
 			
 			if(acertou){
 				taxaAcerto += 1;
