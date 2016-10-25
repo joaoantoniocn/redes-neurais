@@ -42,7 +42,34 @@ public class Main {
 		System.out.println(mlp.calcularTaxaAcerto(baseTeste, labelTeste));
 
 	}
-
+	
+	public static double[][] normalizar(double[][] base){
+		
+		double[] maiorValor = new double[base[0].length];
+		
+		for(int i=0; i<maiorValor.length; i++){
+			maiorValor[i] = 0;
+		}
+		
+		for(int exemplo=0; exemplo<base.length; exemplo++){
+			for(int atributo=0; atributo<base[0].length; atributo++){
+				if(base[exemplo][atributo] > maiorValor[atributo]){
+					maiorValor[atributo] = base[exemplo][atributo];
+				}
+			}
+		}
+		
+		for(int exemplo=0; exemplo<base.length; exemplo++){
+			for(int atributo=0; atributo<base[0].length; atributo++){
+				base[exemplo][atributo] = base[exemplo][atributo]/maiorValor[atributo];
+			}
+		}
+		
+		
+		
+		return base;
+	}
+	
 	public static double[][] getFileWine(String path, int folder,
 			boolean isTreino) {
 
@@ -153,6 +180,8 @@ public class Main {
 			}
 		}
 
+		matriz = normalizar(matriz);
+		
 		return matriz;
 
 	}
