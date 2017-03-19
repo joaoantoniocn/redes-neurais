@@ -2,7 +2,9 @@ package mlp;
 
 import exercicio1.Perceptron;
 
-public class MLP {
+// Nao usar, nao funciona direito
+// Usar a MLP do pacote "projeto"
+public class MLPAntiga {
 
 	private PerceptronMLP[][] perceptrons; // camada, neuronio
 	private double[][] base; // exemplo, atributos
@@ -12,7 +14,7 @@ public class MLP {
 
 	private double taxaAprendizagem;
 
-	public MLP(double[][] base, int[][] label, int[] neuroniosPorCamada) {
+	public MLPAntiga(double[][] base, int[][] label, int[] neuroniosPorCamada) {
 
 		this.base = base;
 		this.label = label;

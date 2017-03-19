@@ -30,7 +30,7 @@ public class Main {
 
 		int[] neuroniosPorCamada = {  18, 10, 3 };
 
-		MLP mlp = new MLP(baseTreino, labelTreino, neuroniosPorCamada);
+		MLPAntiga mlp = new MLPAntiga(baseTreino, labelTreino, neuroniosPorCamada);
 
 		//mlp.treinar(1000); // iris
 		mlp.treinar(10000);
